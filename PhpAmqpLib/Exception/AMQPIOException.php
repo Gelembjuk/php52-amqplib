@@ -1,6 +1,5 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
-class AMQPIOException extends \Exception implements AMQPExceptionInterface
+class PhpAmqpLib_Exception_AMQPIOException extends Exception implements PhpAmqpLib_Exception_AMQPExceptionInterface
 {
 }

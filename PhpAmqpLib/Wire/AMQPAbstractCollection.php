@@ -1,19 +1,14 @@
 <?php
-namespace PhpAmqpLib\Wire;
-
-use PhpAmqpLib\Channel\AbstractChannel;
-use PhpAmqpLib\Exception;
-
 
 /**
  * Iterator implemented for transparent integration with AMQPWriter::write_[array|table]()
  */
-abstract class AMQPAbstractCollection implements \Iterator
+abstract class PhpAmqpLib_Wire_AMQPAbstractCollection implements Iterator
 {
 
     //protocol defines available field types and their corresponding symbols
-    const PROTOCOL_080 = AbstractChannel::PROTOCOL_080;
-    const PROTOCOL_091 = AbstractChannel::PROTOCOL_091;
+    const PROTOCOL_080 = PhpAmqpLib_Channel_AbstractChannel::PROTOCOL_080;
+    const PROTOCOL_091 = PhpAmqpLib_Channel_AbstractChannel::PROTOCOL_091;
     const PROTOCOL_RBT = 'rabbit'; //pseudo proto
 
     //Abstract data types
@@ -121,7 +116,7 @@ abstract class AMQPAbstractCollection implements \Iterator
     {
         if ($val instanceof self) {
             if ($type && ($type != $val->getType())) {
-                throw new Exception\AMQPInvalidArgumentException(
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException(
                     'Attempted to add instance of ' . get_class($val) . ' representing type [' . $val->getType() . '] as mismatching type [' . $type . ']'
                 );
             }
@@ -129,14 +124,14 @@ abstract class AMQPAbstractCollection implements \Iterator
         } elseif ($type) { //ensuring data integrity and that all members are properly validated
             switch ($type) {
                 case self::T_ARRAY:
-                    throw new Exception\AMQPInvalidArgumentException('Arrays must be passed as AMQPArray instance');
+                    throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Arrays must be passed as AMQPArray instance');
                     break;
                 case self::T_TABLE:
-                    throw new Exception\AMQPInvalidArgumentException('Tables must be passed as AMQPTable instance');
+                    throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Tables must be passed as AMQPTable instance');
                     break;
                 case self::T_DECIMAL:
                     if (!($val instanceof AMQPDecimal)) {
-                        throw new Exception\AMQPInvalidArgumentException('Decimal values must be instance of AMQPDecimal');
+                        throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Decimal values must be instance of AMQPDecimal');
                     }
                     break;
             }
@@ -195,7 +190,7 @@ abstract class AMQPAbstractCollection implements \Iterator
     /**
      * @param mixed $val
      * @return mixed
-     * @throws Exception\AMQPOutOfBoundsException
+     * @throws PhpAmqpLib_Exception_AMQPOutOfBoundsException
      */
     protected function encodeValue($val)
     {
@@ -209,7 +204,7 @@ abstract class AMQPAbstractCollection implements \Iterator
             $val = $this->encodeBool($val);
         } elseif (is_null($val)) {
             $val = $this->encodeVoid();
-        } elseif ($val instanceof \DateTime) {
+        } elseif ($val instanceof DateTime) {
             $val = array(self::T_TIMESTAMP, $val->getTimestamp());
         } elseif ($val instanceof AMQPDecimal) {
             $val = array(self::T_DECIMAL, $val);
@@ -229,7 +224,7 @@ abstract class AMQPAbstractCollection implements \Iterator
                 $val = array(self::T_TABLE, new AMQPTable($val));
             }
         } else {
-            throw new Exception\AMQPOutOfBoundsException(sprintf('Encountered value of unsupported type: %s', gettype($val)));
+            throw new PhpAmqpLib_Exception_AMQPOutOfBoundsException(sprintf('Encountered value of unsupported type: %s', gettype($val)));
         }
 
         return $val;
@@ -238,7 +233,7 @@ abstract class AMQPAbstractCollection implements \Iterator
     /**
      * @param mixed $val
      * @param integer $type
-     * @return array|bool|\DateTime|null
+     * @return array|bool|DateTime|null
      */
     protected function decodeValue($val, $type)
     {
@@ -251,14 +246,14 @@ abstract class AMQPAbstractCollection implements \Iterator
                     $val = (bool) $val;
                     break;
                 case self::T_TIMESTAMP:
-                    $val = \DateTime::createFromFormat('U', $val);
+                    $val = DateTime::createFromFormat('U', $val);
                     break;
                 case self::T_VOID:
                     $val = null;
                     break;
                 case self::T_ARRAY:
                 case self::T_TABLE:
-                    throw new Exception\AMQPLogicException(
+                    throw new PhpAmqpLib_Exception_AMQPLogicException(
                         'Encountered an array/table struct which is not an instance of AMQPCollection. ' .
                         'This is considered a bug and should be fixed, please report'
                     );
@@ -330,7 +325,7 @@ abstract class AMQPAbstractCollection implements \Iterator
     {
         if (self::$_protocol === null) {
             self::$_protocol = defined('AMQP_STRICT_FLD_TYPES') && AMQP_STRICT_FLD_TYPES ?
-                AbstractChannel::getProtocolVersion() :
+                PhpAmqpLib_Channel_AbstractChannel::getProtocolVersion() :
                 self::PROTOCOL_RBT;
         }
 
@@ -362,7 +357,7 @@ abstract class AMQPAbstractCollection implements \Iterator
                 $types = self::$_types_rabbit;
                 break;
             default:
-                throw new Exception\AMQPOutOfRangeException(sprintf('Unknown protocol: %s', $proto));
+                throw new PhpAmqpLib_Exception_AMQPOutOfRangeException(sprintf('Unknown protocol: %s', $proto));
         }
 
         return $types;
@@ -378,11 +373,11 @@ abstract class AMQPAbstractCollection implements \Iterator
         try {
             $supported = self::getSupportedDataTypes();
             if (!isset($supported[$type])) {
-                throw new Exception\AMQPOutOfRangeException(sprintf('AMQP-%s doesn\'t support data of type [%s]', self::getProtocol(), $type));
+                throw new PhpAmqpLib_Exception_AMQPOutOfRangeException(sprintf('AMQP-%s doesn\'t support data of type [%s]', self::getProtocol(), $type));
             }
             return true;
 
-        } catch (Exception\AMQPOutOfRangeException $ex) {
+        } catch (PhpAmqpLib_Exception_AMQPOutOfRangeException $ex) {
             if (!$return) {
                 throw $ex;
             }
@@ -399,7 +394,7 @@ abstract class AMQPAbstractCollection implements \Iterator
     {
         $types = self::getSupportedDataTypes();
         if (!isset($types[$type])) {
-            throw new Exception\AMQPOutOfRangeException(sprintf('AMQP-%s doesn\'t support data of type [%s]', self::getProtocol(), $type));
+            throw new PhpAmqpLib_Exception_AMQPOutOfRangeException(sprintf('AMQP-%s doesn\'t support data of type [%s]', self::getProtocol(), $type));
         }
 
         return $types[$type];
@@ -413,7 +408,7 @@ abstract class AMQPAbstractCollection implements \Iterator
     {
         $symbols = array_flip(self::getSupportedDataTypes());
         if (!isset($symbols[$symbol])) {
-            throw new Exception\AMQPOutOfRangeException(sprintf('AMQP-%s doesn\'t define data of type [%s]', self::getProtocol(), $symbol));
+            throw new PhpAmqpLib_Exception_AMQPOutOfRangeException(sprintf('AMQP-%s doesn\'t define data of type [%s]', self::getProtocol(), $symbol));
         }
 
         return $symbols[$symbol];

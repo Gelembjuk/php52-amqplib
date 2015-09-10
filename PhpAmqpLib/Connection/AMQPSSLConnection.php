@@ -1,7 +1,6 @@
 <?php
-namespace PhpAmqpLib\Connection;
 
-class AMQPSSLConnection extends AMQPStreamConnection
+class PhpAmqpLib_Connection_AMQPSSLConnection extends PhpAmqpLib_Connection_AMQPStreamConnection
 {
     /**
      * @param AbstractConnection $host

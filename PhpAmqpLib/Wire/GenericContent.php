@@ -1,15 +1,12 @@
 <?php
-namespace PhpAmqpLib\Wire;
-
-use PhpAmqpLib\Channel\AMQPChannel;
 
 /**
  * Abstract base class for AMQP content.  Subclasses should override
  * the PROPERTIES attribute.
  */
-abstract class GenericContent
+abstract class PhpAmqpLib_Wire_GenericContent
 {
-    /** @var AMQPChannel[] */
+    /** @var PhpAmqpLib_Channel_AMQPChannel[] */
     public $delivery_info = array();
 
     /** @var array Final property definitions */
@@ -62,8 +59,8 @@ abstract class GenericContent
      * and if present - the 'delivery_info' dictionary.
      *
      * @param string $name
-     * @throws \OutOfBoundsException
-     * @return mixed|AMQPChannel
+     * @throws OutOfBoundsException
+     * @return mixed|PhpAmqpLib_Channel_AMQPChannel
      */
     public function get($name)
     {
@@ -75,7 +72,7 @@ abstract class GenericContent
             return $this->delivery_info[$name];
         }
 
-        throw new \OutOfBoundsException(sprintf(
+        throw new OutOfBoundsException(sprintf(
             'No "%s" property',
             $name
         ));
@@ -96,12 +93,12 @@ abstract class GenericContent
      *
      * @param string $name The property name (one of the property definition)
      * @param mixed $value The property value
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     public function set($name, $value)
     {
         if (!array_key_exists($name, $this->prop_types)) {
-            throw new \OutOfBoundsException(sprintf(
+            throw new OutOfBoundsException(sprintf(
                 'No "%s" property',
                 $name
             ));

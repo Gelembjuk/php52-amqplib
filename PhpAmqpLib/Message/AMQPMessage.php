@@ -1,12 +1,9 @@
 <?php
-namespace PhpAmqpLib\Message;
-
-use PhpAmqpLib\Wire\GenericContent;
 
 /**
  * A Message for use with the Channnel.basic_* methods.
  */
-class AMQPMessage extends GenericContent
+class PhpAmqpLib_Message_AMQPMessage extends PhpAmqpLib_Wire_GenericContent_GenericContent
 {
     /** @var string */
     public $body;

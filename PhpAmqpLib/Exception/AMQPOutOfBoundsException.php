@@ -1,6 +1,5 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
-class AMQPOutOfBoundsException extends \OutOfBoundsException implements AMQPExceptionInterface
+class PhpAmqpLib_Exception_AMQPOutOfBoundsException extends OutOfBoundsException implements PhpAmqpLib_Exception_AMQPExceptionInterface
 {
 }

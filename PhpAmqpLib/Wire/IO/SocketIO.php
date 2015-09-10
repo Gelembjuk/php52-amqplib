@@ -1,10 +1,6 @@
 <?php
-namespace PhpAmqpLib\Wire\IO;
 
-use PhpAmqpLib\Exception\AMQPIOException;
-use PhpAmqpLib\Exception\AMQPRuntimeException;
-
-class SocketIO extends AbstractIO
+class PhpAmqpLib_Wire_IO_SocketIO extends PhpAmqpLib_Wire_IO_AbstractIO
 {
     /** @var string */
     protected $host;
@@ -38,7 +34,7 @@ class SocketIO extends AbstractIO
     /**
      * Sets up the socket connection
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function connect()
     {
@@ -50,7 +46,7 @@ class SocketIO extends AbstractIO
         if (!socket_connect($this->sock, $this->host, $this->port)) {
             $errno = socket_last_error($this->sock);
             $errstr = socket_strerror($errno);
-            throw new AMQPIOException(sprintf(
+            throw new PhpAmqpLib_Exception_AMQPIOException(sprintf(
                 'Error Connecting to server (%s): %s',
                 $errno,
                 $errstr
@@ -85,8 +81,8 @@ class SocketIO extends AbstractIO
     /**
      * @param $n
      * @return mixed|string
-     * @throws \PhpAmqpLib\Exception\AMQPIOException
-     * @throws \PhpAmqpLib\Exception\AMQPRuntimeException
+     * @throws PhpAmqpLib_Exception_AMQPIOException
+     * @throws PhpAmqpLib_Exception_AMQPRuntimeException
      */
     public function read($n)
     {
@@ -97,7 +93,7 @@ class SocketIO extends AbstractIO
         while ($read < $n && $buf !== '' && $buf !== false) {
             // Null sockets are invalid, throw exception
             if (is_null($this->sock)) {
-                throw new AMQPRuntimeException(sprintf(
+                throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                     'Socket was null! Last SocketError was: %s',
                     socket_strerror(socket_last_error())
                 ));
@@ -109,7 +105,7 @@ class SocketIO extends AbstractIO
         }
 
         if (mb_strlen($res, 'ASCII') != $n) {
-            throw new AMQPIOException(sprintf(
+            throw new PhpAmqpLib_Exception_AMQPIOException(sprintf(
                 'Error reading data. Received %s instead of expected %s bytes',
                 mb_strlen($res, 'ASCII'),
                 $n
@@ -122,8 +118,8 @@ class SocketIO extends AbstractIO
     /**
      * @param $data
      * @return mixed|void
-     * @throws \PhpAmqpLib\Exception\AMQPIOException
-     * @throws \PhpAmqpLib\Exception\AMQPRuntimeException
+     * @throws PhpAmqpLib_Exception_AMQPIOException
+     * @throws PhpAmqpLib_Exception_AMQPRuntimeException
      */
     public function write($data)
     {
@@ -132,7 +128,7 @@ class SocketIO extends AbstractIO
         while (true) {
             // Null sockets are invalid, throw exception
             if (is_null($this->sock)) {
-                throw new AMQPRuntimeException(sprintf(
+                throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                     'Socket was null! Last SocketError was: %s',
                     socket_strerror(socket_last_error())
                 ));
@@ -140,7 +136,7 @@ class SocketIO extends AbstractIO
 
             $sent = socket_write($this->sock, $data, $len);
             if ($sent === false) {
-                throw new AMQPIOException(sprintf(
+                throw new PhpAmqpLib_Exception_AMQPIOException(sprintf(
                     'Error sending data. Last SocketError: %s',
                     socket_strerror(socket_last_error())
                 ));
@@ -182,12 +178,12 @@ class SocketIO extends AbstractIO
     }
 
     /**
-     * @throws \PhpAmqpLib\Exception\AMQPIOException
+     * @throws PhpAmqpLib_Exception_AMQPIOException
      */
     protected function enable_keepalive()
     {
         if (!defined('SOL_SOCKET') || !defined('SO_KEEPALIVE')) {
-            throw new AMQPIOException('Can not enable keepalive: SOL_SOCKET or SO_KEEPALIVE is not defined');
+            throw new PhpAmqpLib_Exception_AMQPIOException('Can not enable keepalive: SOL_SOCKET or SO_KEEPALIVE is not defined');
         }
 
         socket_set_option($this->sock, SOL_SOCKET, SO_KEEPALIVE, 1);

@@ -1,15 +1,6 @@
 <?php
-namespace PhpAmqpLib\Channel;
 
-use PhpAmqpLib\Exception\AMQPBasicCancelException;
-use PhpAmqpLib\Exception\AMQPProtocolChannelException;
-use PhpAmqpLib\Exception\AMQPRuntimeException;
-use PhpAmqpLib\Helper\MiscHelper;
-use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Wire\AMQPReader;
-use PhpAmqpLib\Wire\AMQPWriter;
-
-class AMQPChannel extends AbstractChannel
+class PhpAmqpLib_Channel_AMQPChannel extends PhpAmqpLib_Channel_AbstractChannel
 {
     /** @var array */
     public $callbacks = array();
@@ -35,7 +26,7 @@ class AMQPChannel extends AbstractChannel
      *    param string $reply_text
      *    param string $exchange
      *    param string $routing_key
-     *    param AMQPMessage $msg
+     *    param PhpAmqpLib_Message_AMQPMessage $msg
      *
      * @var callable
      */
@@ -48,7 +39,7 @@ class AMQPChannel extends AbstractChannel
      * If the channel is in confirm_publish mode this array will store all published messages
      * until they get ack'ed or nack'ed
      *
-     * @var AMQPMessage[]
+     * @var PhpAmqpLib_Message_AMQPMessage[]
      */
     private $published_messages = array();
 
@@ -79,10 +70,10 @@ class AMQPChannel extends AbstractChannel
     private $publish_cache_max_size;
 
     /**
-     * @param \PhpAmqpLib\Connection\AbstractConnection $connection
+     * @param PhpAmqpLib_Connection_AbstractConnection $connection
      * @param null $channel_id
      * @param bool $auto_decode
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($connection, $channel_id = null, $auto_decode = true)
     {
@@ -96,7 +87,7 @@ class AMQPChannel extends AbstractChannel
         $this->publish_cache_max_size = 100;
 
         if ($this->debug) {
-            MiscHelper::debug_msg('using channel_id: ' . $channel_id);
+            PhpAmqpLib_Helper_MiscHelper::debug_msg('using channel_id: ' . $channel_id);
         }
 
         $this->default_ticket = 0;
@@ -108,7 +99,7 @@ class AMQPChannel extends AbstractChannel
 
         try {
             $this->x_open();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->close();
             throw $e;
         }
@@ -135,7 +126,7 @@ class AMQPChannel extends AbstractChannel
      * errors are handled as channel or connection exceptions; non-
      * fatal errors are sent through this method.
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      */
     protected function channel_alert($args)
     {
@@ -175,8 +166,8 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * @param AMQPReader $args
-     * @throws \PhpAmqpLib\Exception\AMQPProtocolChannelException
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @throws PhpAmqpLib_Exception_AMQPProtocolChannelException
      */
     protected function channel_close($args)
     {
@@ -188,14 +179,14 @@ class AMQPChannel extends AbstractChannel
         $this->send_method_frame(array(20, 41));
         $this->do_close();
 
-        throw new AMQPProtocolChannelException($reply_code, $reply_text, array($class_id, $method_id));
+        throw new PhpAmqpLib_Exception_AMQPProtocolChannelException($reply_code, $reply_text, array($class_id, $method_id));
     }
 
     /**
      * Confirm a channel close
      * Alias of AMQPChannel::do_close()
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      */
     protected function channel_close_ok($args)
     {
@@ -219,7 +210,7 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      */
     protected function channel_flow($args)
     {
@@ -237,7 +228,7 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      * @return bool
      */
     protected function channel_flow_ok($args)
@@ -264,14 +255,14 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      */
     protected function channel_open_ok($args)
     {
         $this->is_open = true;
 
         if ($this->debug) {
-            MiscHelper::debug_msg('Channel open');
+            PhpAmqpLib_Helper_MiscHelper::debug_msg('Channel open');
         }
     }
 
@@ -313,7 +304,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Grants access to server resources
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      * @return string
      */
     protected function access_request_ok($args)
@@ -637,7 +628,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Confirms a queue definition
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      * @return array
      */
     protected function queue_declare_ok($args)
@@ -685,7 +676,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Confirms deletion of a queue
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      * @return string
      */
     protected function queue_delete_ok($args)
@@ -720,7 +711,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Confirms a queue purge
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      * @return string
      */
     protected function queue_purge_ok($args)
@@ -743,16 +734,16 @@ class AMQPChannel extends AbstractChannel
     /**
      * Called when the server sends a basic.ack
      *
-     * @param AMQPReader $args
-     * @throws AMQPRuntimeException
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @throws PhpAmqpLib_Exception_AMQPRuntimeException
      */
-    protected function basic_ack_from_server(AMQPReader $args)
+    protected function basic_ack_from_server(PhpAmqpLib_Wire_AMQPReader $args)
     {
         $delivery_tag = $args->read_longlong();
         $multiple = (bool) $args->read_bit();
 
         if (false === isset($this->published_messages[$delivery_tag])) {
-            throw new AMQPRuntimeException(sprintf(
+            throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                 'Server ack\'ed unknown delivery_tag %s',
                 $delivery_tag
             ));
@@ -764,8 +755,8 @@ class AMQPChannel extends AbstractChannel
     /**
      * Called when the server sends a basic.nack
      *
-     * @param AMQPReader $args
-     * @throws AMQPRuntimeException
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @throws PhpAmqpLib_Exception_AMQPRuntimeException
      */
     protected function basic_nack_from_server($args)
     {
@@ -773,7 +764,7 @@ class AMQPChannel extends AbstractChannel
         $multiple = (bool) $args->read_bit();
 
         if (false === isset($this->published_messages[$delivery_tag])) {
-            throw new AMQPRuntimeException(sprintf(
+            throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                 'Server nack\'ed unknown delivery_tag %s',
                 $delivery_tag
             ));
@@ -863,20 +854,20 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * @param AMQPReader $args
-     * @throws \PhpAmqpLib\Exception\AMQPBasicCancelException
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @throws PhpAmqpLib_Exception_AMQPBasicCancelException
      */
-    protected function basic_cancel_from_server(AMQPReader $args)
+    protected function basic_cancel_from_server(PhpAmqpLib_Wire_AMQPReader $args)
     {
         $consumerTag = $args->read_shortstr();
 
-        throw new AMQPBasicCancelException($consumerTag);
+        throw new PhpAmqpLib_Exception_AMQPBasicCancelException($consumerTag);
     }
 
     /**
      * Confirm a cancelled consumer
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      */
     protected function basic_cancel_ok($args)
     {
@@ -938,7 +929,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Confirms a new consumer
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      * @return string
      */
     protected function basic_consume_ok($args)
@@ -949,8 +940,8 @@ class AMQPChannel extends AbstractChannel
     /**
      * Notifies the client of a consumer message
      *
-     * @param AMQPReader $args
-     * @param AMQPMessage $msg
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @param PhpAmqpLib_Message_AMQPMessage $msg
      */
     protected function basic_deliver($args, $msg)
     {
@@ -1004,7 +995,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Indicates no messages available
      *
-     * @param AMQPReader $args
+     * @param PhpAmqpLib_Wire_AMQPReader $args
      */
     protected function basic_get_empty($args)
     {
@@ -1014,9 +1005,9 @@ class AMQPChannel extends AbstractChannel
     /**
      * Provides client with a message
      *
-     * @param AMQPReader $args
-     * @param AMQPMessage $msg
-     * @return AMQPMessage
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @param PhpAmqpLib_Message_AMQPMessage $msg
+     * @return PhpAmqpLib_Message_AMQPMessage
      */
     protected function basic_get_ok($args, $msg)
     {
@@ -1080,7 +1071,7 @@ class AMQPChannel extends AbstractChannel
     /**
      * Publishes a message
      *
-     * @param AMQPMessage $msg
+     * @param PhpAmqpLib_Message_AMQPMessage $msg
      * @param string $exchange
      * @param string $routing_key
      * @param bool $mandatory
@@ -1095,7 +1086,7 @@ class AMQPChannel extends AbstractChannel
         $immediate = false,
         $ticket = null
     ) {
-        $pkt = new AMQPWriter();
+        $pkt = new PhpAmqpLib_Wire_AMQPWriter();
         $pkt->write($this->pre_publish($exchange, $routing_key, $mandatory, $immediate, $ticket));
 
         $this->connection->send_content(
@@ -1115,7 +1106,7 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * @param AMQPMessage $msg
+     * @param PhpAmqpLib_Message_AMQPMessage $msg
      * @param string $exchange
      * @param string $routing_key
      * @param bool $mandatory
@@ -1144,10 +1135,10 @@ class AMQPChannel extends AbstractChannel
             return;
         }
 
-        /** @var AMQPWriter $pkt */
-        $pkt = new AMQPWriter();
+        /** @var PhpAmqpLib_Wire_AMQPWriter $pkt */
+        $pkt = new PhpAmqpLib_Wire_AMQPWriter();
 
-        /** @var AMQPMessage $msg */
+        /** @var PhpAmqpLib_Message_AMQPMessage $msg */
         foreach ($this->batch_messages as $m) {
             $msg = $m[0];
 
@@ -1247,8 +1238,8 @@ class AMQPChannel extends AbstractChannel
     /**
      * Returns a failed message
      *
-     * @param AMQPReader $args
-     * @param AMQPMessage $msg
+     * @param PhpAmqpLib_Wire_AMQPReader $args
+     * @param PhpAmqpLib_Message_AMQPMessage $msg
      */
     protected function basic_return($args, $msg)
     {
@@ -1267,7 +1258,7 @@ class AMQPChannel extends AbstractChannel
             ));
 
         } elseif ($this->debug) {
-            MiscHelper::debug_msg('Skipping unhandled basic_return message');
+            PhpAmqpLib_Helper_MiscHelper::debug_msg('Skipping unhandled basic_return message');
         }
     }
 
@@ -1427,7 +1418,7 @@ class AMQPChannel extends AbstractChannel
      * Helper method to get a particular method from $this->publishedMessages, removes it from the array and returns it.
      *
      * @param $index
-     * @return AMQPMessage
+     * @return PhpAmqpLib_Message_AMQPMessage
      */
     protected function get_and_unset_message($index)
     {
@@ -1441,12 +1432,12 @@ class AMQPChannel extends AbstractChannel
      * Sets callback for basic_return
      *
      * @param  callable $callback
-     * @throws \InvalidArgumentException if $callback is not callable
+     * @throws InvalidArgumentException if $callback is not callable
      */
     public function set_return_listener($callback)
     {
         if (false === is_callable($callback)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Given callback "%s" should be callable. %s type was given.',
                 $callback,
                 gettype($callback)
@@ -1457,15 +1448,15 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * Sets a handler which called for any message nack'ed by the server, with the AMQPMessage as first argument.
+     * Sets a handler which called for any message nack'ed by the server, with the PhpAmqpLib_Message_AMQPMessage as first argument.
      *
      * @param callable $callback
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function set_nack_handler($callback)
     {
         if (false === is_callable($callback)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Given callback "%s" should be callable. %s type was given.',
                 $callback,
                 gettype($callback)
@@ -1476,15 +1467,15 @@ class AMQPChannel extends AbstractChannel
     }
 
     /**
-     * Sets a handler which called for any message ack'ed by the server, with the AMQPMessage as first argument.
+     * Sets a handler which called for any message ack'ed by the server, with the PhpAmqpLib_Message_AMQPMessage as first argument.
      *
      * @param callable $callback
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function set_ack_handler($callback)
     {
         if (false === is_callable($callback)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Given callback "%s" should be callable. %s type was given.',
                 $callback,
                 gettype($callback)

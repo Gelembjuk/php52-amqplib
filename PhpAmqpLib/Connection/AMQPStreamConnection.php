@@ -1,9 +1,6 @@
 <?php
-namespace PhpAmqpLib\Connection;
 
-use PhpAmqpLib\Wire\IO\StreamIO;
-
-class AMQPStreamConnection extends AbstractConnection
+class PhpAmqpLib_Connection_AMQPStreamConnection extends PhpAmqpLib_Connection_AbstractConnection
 {
     /**
      * @param AbstractConnection $host
@@ -36,7 +33,7 @@ class AMQPStreamConnection extends AbstractConnection
         $keepalive = false,
         $heartbeat = 0
     ) {
-        $io = new StreamIO($host, $port, $connection_timeout, $read_write_timeout, $context, $keepalive, $heartbeat);
+        $io = new PhpAmqpLib_Wire_IO_StreamIO($host, $port, $connection_timeout, $read_write_timeout, $context, $keepalive, $heartbeat);
 
         parent::__construct($user, $password, $vhost, $insist, $login_method, $login_response, $locale, $io, $heartbeat);
 

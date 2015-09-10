@@ -1,19 +1,11 @@
 <?php
-namespace PhpAmqpLib\Wire;
-
-use PhpAmqpLib\Exception\AMQPInvalidArgumentException;
-use PhpAmqpLib\Exception\AMQPOutOfBoundsException;
-use PhpAmqpLib\Exception\AMQPRuntimeException;
-use PhpAmqpLib\Exception\AMQPTimeoutException;
-use PhpAmqpLib\Helper\MiscHelper;
-use PhpAmqpLib\Wire\IO\AbstractIO;
 
 /**
  * This class can read from a string or from a stream
  *
  * TODO : split this class: AMQPStreamReader and a AMQPBufferReader
  */
-class AMQPReader extends AbstractClient
+class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
 {
     const BIT = 1;
     const OCTET = 1;
@@ -46,15 +38,15 @@ class AMQPReader extends AbstractClient
     /** @var int */
     protected $bits;
 
-    /** @var \PhpAmqpLib\Wire\IO\AbstractIO */
+    /** @var _PhpAmqpLib_Wire_IO_AbstractIO */
     protected $io;
 
     /**
      * @param string $str
-     * @param AbstractIO $io
+     * @param PhpAmqpLib_Wire_IO_AbstractIO $io
      * @param int $timeout
      */
-    public function __construct($str, AbstractIO $io = null, $timeout = 0)
+    public function __construct($str, PhpAmqpLib_Wire_IO_AbstractIO $io = null, $timeout = 0)
     {
         parent::__construct();
 
@@ -71,7 +63,7 @@ class AMQPReader extends AbstractClient
      *
      * Used to not need to create a new AMQPReader instance every time.
      * when we can just pass a string and reset the object state.
-     * NOTE: since we are working with strings we don't need to pass an AbstractIO
+     * NOTE: since we are working with strings we don't need to pass an PhpAmqpLib_Wire_IO_AbstractIO
      *       or a timeout.
      *
      * @param string $str
@@ -108,9 +100,9 @@ class AMQPReader extends AbstractClient
     /**
      * Waits until some data is retrieved from the socket.
      *
-     * AMQPTimeoutException can be raised if the timeout is set
+     * PhpAmqpLib_Exception_AMQPTimeoutException can be raised if the timeout is set
      *
-     * @throws \PhpAmqpLib\Exception\AMQPTimeoutException
+     * @throws PhpAmqpLib_Exception_AMQPTimeoutException
      */
     protected function wait()
     {
@@ -119,15 +111,15 @@ class AMQPReader extends AbstractClient
         }
 
         // wait ..
-        list($sec, $usec) = MiscHelper::splitSecondsMicroseconds($this->timeout);
+        list($sec, $usec) = PhpAmqpLib_Helper_MiscHelper::splitSecondsMicroseconds($this->timeout);
         $result = $this->io->select($sec, $usec);
 
         if ($result === false) {
-            throw new AMQPRuntimeException('A network error occured while awaiting for incoming data');
+            throw new PhpAmqpLib_Exception_AMQPRuntimeException('A network error occured while awaiting for incoming data');
         }
 
         if ($result === 0) {
-            throw new AMQPTimeoutException(sprintf(
+            throw new PhpAmqpLib_Exception_AMQPTimeoutException(sprintf(
                 'The connection timed out after %s sec while awaiting incoming data',
                 $this->getTimeout()
             ));
@@ -137,8 +129,8 @@ class AMQPReader extends AbstractClient
     /**
      * @param $n
      * @return string
-     * @throws \RuntimeException
-     * @throws \PhpAmqpLib\Exception\AMQPRuntimeException
+     * @throws RuntimeException
+     * @throws PhpAmqpLib_Exception_AMQPRuntimeException
      */
     protected function rawread($n)
     {
@@ -148,7 +140,7 @@ class AMQPReader extends AbstractClient
             $this->offset += $n;
         } else {
             if ($this->str_length < $n) {
-                throw new AMQPRuntimeException(sprintf(
+                throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                     'Error reading data. Requested %s bytes while string buffer has only %s',
                     $n,
                     $this->str_length
@@ -346,7 +338,7 @@ class AMQPReader extends AbstractClient
         $slen = $this->read_php_int();
 
         if ($slen < 0) {
-            throw new AMQPOutOfBoundsException('Strings longer than supported on this platform');
+            throw new PhpAmqpLib_Exception_AMQPOutOfBoundsException('Strings longer than supported on this platform');
         }
 
         return $this->rawread($slen);
@@ -374,7 +366,7 @@ class AMQPReader extends AbstractClient
         $tlen = $this->read_php_int();
 
         if ($tlen < 0) {
-            throw new AMQPOutOfBoundsException('Table is longer than supported');
+            throw new PhpAmqpLib_Exception_AMQPOutOfBoundsException('Table is longer than supported');
         }
 
         $table_data = new AMQPReader($this->rawread($tlen), null);
@@ -436,7 +428,7 @@ class AMQPReader extends AbstractClient
      * @param int $fieldType One of AMQPAbstractCollection::T_* constants
      * @param bool $collectionsAsObjects Description
      * @return mixed
-     * @throws \PhpAmqpLib\Exception\AMQPRuntimeException
+     * @throws PhpAmqpLib_Exception_AMQPRuntimeException
      */
     public function read_value($fieldType, $collectionsAsObjects = false)
     {
@@ -497,7 +489,7 @@ class AMQPReader extends AbstractClient
                 $val = null;
                 break;
             default:
-                throw new AMQPInvalidArgumentException(sprintf(
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException(sprintf(
                     'Unsupported type "%s"',
                     $fieldType
                 ));

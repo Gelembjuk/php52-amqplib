@@ -1,6 +1,5 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
-class AMQPProtocolConnectionException extends AMQPProtocolException
+class PhpAmqpLib_Exception_AMQPProtocolConnectionException extends PhpAmqpLib_Exception_AMQPProtocolException
 {
 }

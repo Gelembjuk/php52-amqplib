@@ -1,6 +1,5 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
-interface AMQPExceptionInterface
+interface PhpAmqpLib_Exceptio_AMQPExceptionInterface
 {
 }

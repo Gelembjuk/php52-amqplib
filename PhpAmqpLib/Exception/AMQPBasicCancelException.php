@@ -1,7 +1,6 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
-class AMQPBasicCancelException extends \Exception implements AMQPExceptionInterface
+class PhpAmqpLib_Exception_AMQPBasicCancelException extends Exception implements PhpAmqpLib_Exception_AMQPExceptionInterface
 {
     /** @var string */
     public $consumerTag;

@@ -1,7 +1,6 @@
 <?php
-namespace PhpAmqpLib\Connection;
 
-class AMQPLazyConnection extends AMQPStreamConnection
+class PhpAmqpLib_Connection_AMQPLazyConnection extends PhpAmqpLib_Connection_AMQPStreamConnection
 {
     /**
      * Gets socket from current connection

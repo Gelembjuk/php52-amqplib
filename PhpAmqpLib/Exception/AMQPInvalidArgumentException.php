@@ -1,6 +1,5 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
-class AMQPInvalidArgumentException extends \RuntimeException implements AMQPExceptionInterface
+class PhpAmqpLib_Exception_AMQPInvalidArgumentException extends RuntimeException implements PhpAmqpLib_Exception_AMQPExceptionInterface
 {
 }

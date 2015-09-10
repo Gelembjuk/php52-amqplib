@@ -1,10 +1,6 @@
 <?php
-namespace PhpAmqpLib\Wire;
 
-use PhpAmqpLib\Exception\AMQPInvalidArgumentException;
-use PhpAmqpLib\Exception\AMQPOutOfBoundsException;
-
-class AMQPWriter extends AbstractClient
+class PhpAmqpLib_Wire_AMQPWriter extends PhpAmqpLib_Wire_AbstractClient
 {
     /** @var string */
     protected $out;
@@ -38,7 +34,7 @@ class AMQPWriter extends AbstractClient
     private static function packBigEndian($x, $bytes)
     {
         if (($bytes <= 0) || ($bytes % 2)) {
-            throw new AMQPInvalidArgumentException(sprintf('Expected bytes count must be multiply of 2, %s given', $bytes));
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException(sprintf('Expected bytes count must be multiply of 2, %s given', $bytes));
         }
 
         $ox = $x; //purely for dbg purposes (overflow exception)
@@ -50,11 +46,11 @@ class AMQPWriter extends AbstractClient
             }
         } elseif (is_string($x)) {
             if (!is_numeric($x)) {
-                throw new AMQPInvalidArgumentException(sprintf('Unknown numeric string format: %s', $x));
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException(sprintf('Unknown numeric string format: %s', $x));
             }
             $x = preg_replace('/^-/', '', $x, 1, $isNeg);
         } else {
-            throw new AMQPInvalidArgumentException('Only integer and numeric string values are supported');
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Only integer and numeric string values are supported');
         }
         if ($isNeg) {
             $x = bcadd($x, -1, 0);
@@ -67,7 +63,7 @@ class AMQPWriter extends AbstractClient
             $res[] = pack('n', $isNeg ? ~$chnk : $chnk);
         }
         if ($x || ($isNeg && ($chnk & 0x8000))) {
-            throw new AMQPOutOfBoundsException(sprintf('Overflow detected while attempting to pack %s into %s bytes', $ox, $bytes));
+            throw new PhpAmqpLib_Exception_AMQPOutOfBoundsException(sprintf('Overflow detected while attempting to pack %s into %s bytes', $ox, $bytes));
         }
 
         return implode(array_reverse($res));
@@ -156,12 +152,12 @@ class AMQPWriter extends AbstractClient
      *
      * @param $n
      * @return $this
-     * @throws \PhpAmqpLib\Exception\AMQPInvalidArgumentException
+     * @throws PhpAmqpLib_Exception_AMQPInvalidArgumentException
      */
     public function write_octet($n)
     {
         if ($n < 0 || $n > 255) {
-            throw new AMQPInvalidArgumentException('Octet out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Octet out of range: ' . $n);
         }
 
         $this->out .= chr($n);
@@ -172,7 +168,7 @@ class AMQPWriter extends AbstractClient
     public function write_signed_octet($n)
     {
         if (($n < -128) || ($n > 127)) {
-            throw new AMQPInvalidArgumentException('Signed octet out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Signed octet out of range: ' . $n);
         }
 
         $this->out .= pack('c', $n);
@@ -185,12 +181,12 @@ class AMQPWriter extends AbstractClient
      *
      * @param $n
      * @return $this
-     * @throws \PhpAmqpLib\Exception\AMQPInvalidArgumentException
+     * @throws PhpAmqpLib_Exception_AMQPInvalidArgumentException
      */
     public function write_short($n)
     {
         if ($n < 0 || $n > 65535) {
-            throw new AMQPInvalidArgumentException('Short out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Short out of range: ' . $n);
         }
 
         $this->out .= pack('n', $n);
@@ -201,7 +197,7 @@ class AMQPWriter extends AbstractClient
     public function write_signed_short($n)
     {
         if (($n < -32768) || ($n > 32767)) {
-            throw new AMQPInvalidArgumentException('Signed short out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Signed short out of range: ' . $n);
         }
 
         $this->out .= $this->correctEndianness(pack('s', $n));
@@ -218,7 +214,7 @@ class AMQPWriter extends AbstractClient
     public function write_long($n)
     {
         if (($n < 0) || ($n > 4294967295)) {
-            throw new AMQPInvalidArgumentException('Long out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Long out of range: ' . $n);
         }
 
         //Numeric strings >PHP_INT_MAX on 32bit are casted to PHP_INT_MAX, damn PHP
@@ -237,7 +233,7 @@ class AMQPWriter extends AbstractClient
     private function write_signed_long($n)
     {
         if (($n < -2147483648) || ($n > 2147483647)) {
-            throw new AMQPInvalidArgumentException('Signed long out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Signed long out of range: ' . $n);
         }
 
         //on my 64bit debian this approach is slightly faster than splitIntoQuads()
@@ -255,7 +251,7 @@ class AMQPWriter extends AbstractClient
     public function write_longlong($n)
     {
         if ($n < 0) {
-            throw new AMQPInvalidArgumentException('Longlong out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Longlong out of range: ' . $n);
         }
 
         // if PHP_INT_MAX is big enough for that
@@ -272,8 +268,8 @@ class AMQPWriter extends AbstractClient
         } else {
             try {
                 $this->out .= self::packBigEndian($n, 8);
-            } catch (AMQPOutOfBoundsException $ex) {
-                throw new AMQPInvalidArgumentException('Longlong out of range: ' . $n, 0, $ex);
+            } catch (PhpAmqpLib_Exception_AMQPOutOfBoundsException $ex) {
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Longlong out of range: ' . $n, 0, $ex);
             }
         }
 
@@ -291,16 +287,16 @@ class AMQPWriter extends AbstractClient
             } //0xffffffff for negatives
             $this->out .= pack('NN', $hi, $lo);
         } elseif ($this->is64bits) {
-            throw new AMQPInvalidArgumentException('Signed longlong out of range: ' . $n);
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Signed longlong out of range: ' . $n);
         } else {
             if (bcadd($n, '-9223372036854775807', 0) > 0) {
-                throw new AMQPInvalidArgumentException('Signed longlong out of range: ' . $n);
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Signed longlong out of range: ' . $n);
             }
             try {
                 //will catch only negative overflow, as values >9223372036854775807 are valid for 8bytes range (unsigned)
                 $this->out .= self::packBigEndian($n, 8);
-            } catch (AMQPOutOfBoundsException $ex) {
-                throw new AMQPInvalidArgumentException('Signed longlong out of range: ' . $n, 0, $ex);
+            } catch (PhpAmqpLib_Exception_AMQPOutOfBoundsException $ex) {
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Signed longlong out of range: ' . $n, 0, $ex);
             }
         }
 
@@ -324,13 +320,13 @@ class AMQPWriter extends AbstractClient
      *
      * @param $s
      * @return $this
-     * @throws \PhpAmqpLib\Exception\AMQPInvalidArgumentException
+     * @throws PhpAmqpLib_Exception_AMQPInvalidArgumentException
      */
     public function write_shortstr($s)
     {
         $len = mb_strlen($s, 'ASCII');
         if ($len > 255) {
-            throw new AMQPInvalidArgumentException('String too long');
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('String too long');
         }
 
         $this->write_octet($len);
@@ -397,7 +393,7 @@ class AMQPWriter extends AbstractClient
      *
      * @param AMQPTable|array $d Instance of AMQPTable or PHP array WITH format hints (unlike write_array())
      * @return self
-     * @throws \PhpAmqpLib\Exception\AMQPInvalidArgumentException
+     * @throws PhpAmqpLib_Exception_AMQPInvalidArgumentException
      */
     public function write_table($d)
     {
@@ -485,7 +481,7 @@ class AMQPWriter extends AbstractClient
             case AMQPAbstractCollection::T_VOID:
                 break;
             default:
-                throw new AMQPInvalidArgumentException(sprintf(
+                throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException(sprintf(
                     'Unsupported type "%s"',
                     $type
                 ));

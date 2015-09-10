@@ -1,10 +1,6 @@
 <?php
-namespace PhpAmqpLib\Wire;
 
-use PhpAmqpLib\Exception;
-
-
-class AMQPTable extends AMQPAbstractCollection
+class PhpAmqpLib_Wire_AMQPTable extends PhpAmqpLib_Wire_AMQPAbstractCollection
 {
 
     /**
@@ -28,7 +24,7 @@ class AMQPTable extends AMQPAbstractCollection
 
         //validating length only and delegating other stuff to server, as rabbit seems to currently support numeric keys
         if (!($len = strlen($key)) || ($len > 128)) {
-            throw new Exception\AMQPInvalidArgumentException('Table key must be non-empty string up to 128 chars in length');
+            throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException('Table key must be non-empty string up to 128 chars in length');
         }
         $this->setValue($val, $type, $key);
     }

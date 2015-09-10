@@ -1,5 +1,4 @@
 <?php
-namespace PhpAmqpLib\Connection;
 
 /**
  * Class AMQPConnection
@@ -8,6 +7,6 @@ namespace PhpAmqpLib\Connection;
  *
  * @deprecated
  */
-class AMQPConnection extends AMQPStreamConnection
+class PhpAmqpLib_Connection_AMQPConnection extends PhpAmqpLib_Connection_AMQPStreamConnection
 {
 }

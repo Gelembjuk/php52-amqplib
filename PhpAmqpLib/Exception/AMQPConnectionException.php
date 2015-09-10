@@ -1,9 +1,8 @@
 <?php
-namespace PhpAmqpLib\Exception;
 
 /**
  * @deprecated use AMQPProtocolConnectionException instead
  */
-class AMQPConnectionException extends AMQPException
+class PhpAmqpLib_Exception_AMQPConnectionException extends PhpAmqpLib_Exception_AMQPException
 {
 }

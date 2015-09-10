@@ -1,8 +1,6 @@
 <?php
-namespace PhpAmqpLib\Wire;
 
-
-class AbstractClient
+class PhpAmqpLib_Wire_AbstractClient
 {
 
     /**

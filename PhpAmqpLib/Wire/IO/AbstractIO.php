@@ -1,7 +1,6 @@
 <?php
-namespace PhpAmqpLib\Wire\IO;
 
-abstract class AbstractIO
+abstract class PhpAmqpLib_Wire_IO_AbstractIO
 {
     /**
      * @param $n

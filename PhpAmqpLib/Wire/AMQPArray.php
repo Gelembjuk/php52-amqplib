@@ -1,8 +1,7 @@
 <?php
-namespace PhpAmqpLib\Wire;
 
 
-class AMQPArray extends AMQPAbstractCollection
+class PhpAmqpLib_Wire_AMQPArray extends PhpAmqpLib_Wire_AMQPAbstractCollection
 {
 
     public function __construct(array $data = null)
