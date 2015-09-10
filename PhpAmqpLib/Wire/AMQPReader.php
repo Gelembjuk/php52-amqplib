@@ -369,11 +369,11 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
             throw new PhpAmqpLib_Exception_AMQPOutOfBoundsException('Table is longer than supported');
         }
 
-        $table_data = new AMQPReader($this->rawread($tlen), null);
+        $table_data = new PhpAmqpLib_Wire_AMQPReader($this->rawread($tlen), null);
         $result = $returnObject ? new AMQPTable() : array();
         while ($table_data->tell() < $tlen) {
             $name = $table_data->read_shortstr();
-            $ftype = AMQPAbstractCollection::getDataTypeForSymbol($ftypeSym = $table_data->rawread(1));
+            $ftype = PhpAmqpLib_Wire_AMQPAbstractCollection::getDataTypeForSymbol($ftypeSym = $table_data->rawread(1));
             $val = $table_data->read_value($ftype, $returnObject);
             $returnObject ? $result->set($name, $val, $ftype) : $result[$name] = array($ftypeSym, $val);
         }
@@ -406,7 +406,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
         $result = $returnObject ? new AMQPArray() : array();
         // Read values until we reach the end of the array
         while ($this->offset < $endOffset) {
-            $fieldType = AMQPAbstractCollection::getDataTypeForSymbol($this->rawread(1));
+            $fieldType = PhpAmqpLib_Wire_AMQPAbstractCollection::getDataTypeForSymbol($this->rawread(1));
             $fieldValue = $this->read_value($fieldType, $returnObject);
             $returnObject ? $result->push($fieldValue, $fieldType) : $result[] = $fieldValue;
         }
@@ -425,7 +425,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
     /**
      * Reads the next value as the provided field type.
      *
-     * @param int $fieldType One of AMQPAbstractCollection::T_* constants
+     * @param int $fieldType One of PhpAmqpLib_Wire_AMQPAbstractCollection::T_* constants
      * @param bool $collectionsAsObjects Description
      * @return mixed
      * @throws PhpAmqpLib_Exception_AMQPRuntimeException
@@ -436,56 +436,56 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
 
         $val = null;
         switch ($fieldType) {
-            case AMQPAbstractCollection::T_INT_SHORTSHORT:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORTSHORT:
                 //according to AMQP091 spec, 'b' is not bit, it is short-short-int, also valid for rabbit/qpid
                 //$val=$this->read_bit();
                 $val = $this->read_signed_octet();
                 break;
-            case AMQPAbstractCollection::T_INT_SHORTSHORT_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORTSHORT_U:
                 $val = $this->read_octet();
                 break;
-            case AMQPAbstractCollection::T_INT_SHORT:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORT:
                 $val = $this->read_signed_short();
                 break;
-            case AMQPAbstractCollection::T_INT_SHORT_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORT_U:
                 $val = $this->read_short();
                 break;
-            case AMQPAbstractCollection::T_INT_LONG:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONG:
                 $val = $this->read_signed_long();
                 break;
-            case AMQPAbstractCollection::T_INT_LONG_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONG_U:
                 $val = $this->read_long();
                 break;
-            case AMQPAbstractCollection::T_INT_LONGLONG:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONGLONG:
                 $val = $this->read_signed_longlong();
                 break;
-            case AMQPAbstractCollection::T_INT_LONGLONG_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONGLONG_U:
                 $val = $this->read_longlong();
                 break;
-            case AMQPAbstractCollection::T_DECIMAL:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_DECIMAL:
                 $e = $this->read_octet();
                 $n = $this->read_signed_long();
                 $val = new AMQPDecimal($n, $e);
                 break;
-            case AMQPAbstractCollection::T_TIMESTAMP:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_TIMESTAMP:
                 $val = $this->read_timestamp();
                 break;
-            case AMQPAbstractCollection::T_BOOL:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_BOOL:
                 $val = $this->read_octet();
                 break;
-            case AMQPAbstractCollection::T_STRING_SHORT:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_STRING_SHORT:
                 $val = $this->read_shortstr();
                 break;
-            case AMQPAbstractCollection::T_STRING_LONG:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_STRING_LONG:
                 $val = $this->read_longstr();
                 break;
-            case AMQPAbstractCollection::T_ARRAY:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_ARRAY:
                 $val = $this->read_array($collectionsAsObjects);
                 break;
-            case AMQPAbstractCollection::T_TABLE:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_TABLE:
                 $val = $this->read_table($collectionsAsObjects);
                 break;
-            case AMQPAbstractCollection::T_VOID:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_VOID:
                 $val = null;
                 break;
             default:

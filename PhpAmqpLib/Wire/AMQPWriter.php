@@ -361,7 +361,7 @@ class PhpAmqpLib_Wire_AMQPWriter extends PhpAmqpLib_Wire_AbstractClient
         if (!($a instanceof AMQPArray)) {
             $a = new AMQPArray($a);
         }
-        $data = new AMQPWriter();
+        $data = new PhpAmqpLib_Wire_AMQPWriter();
 
         foreach ($a as $v) {
             $data->write_value($v[0], $v[1]);
@@ -399,11 +399,11 @@ class PhpAmqpLib_Wire_AMQPWriter extends PhpAmqpLib_Wire_AbstractClient
     {
         $typeIsSym = !($d instanceof AMQPTable); //purely for back-compat purposes
 
-        $table_data = new AMQPWriter();
+        $table_data = new PhpAmqpLib_Wire_AMQPWriter();
         foreach ($d as $k => $va) {
             list($ftype, $v) = $va;
             $table_data->write_shortstr($k);
-            $table_data->write_value($typeIsSym ? AMQPAbstractCollection::getDataTypeForSymbol($ftype) : $ftype, $v);
+            $table_data->write_value($typeIsSym ? PhpAmqpLib_Wire_AMQPAbstractCollection::getDataTypeForSymbol($ftype) : $ftype, $v);
         }
 
         $table_data = $table_data->getvalue();
@@ -422,63 +422,63 @@ class PhpAmqpLib_Wire_AMQPWriter extends PhpAmqpLib_Wire_AbstractClient
     }
 
     /**
-     * @param int $type One of AMQPAbstractCollection::T_* constants
+     * @param int $type One of PhpAmqpLib_Wire_AMQPAbstractCollection::T_* constants
      * @param mixed $val
      */
     private function write_value($type, $val)
     {
         //This will find appropriate symbol for given data type for currently selected protocol
         //Also will raise an exception on unknown type
-        $this->write(AMQPAbstractCollection::getSymbolForDataType($type));
+        $this->write(PhpAmqpLib_Wire_AMQPAbstractCollection::getSymbolForDataType($type));
 
         switch ($type) {
-            case AMQPAbstractCollection::T_INT_SHORTSHORT:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORTSHORT:
                 $this->write_signed_octet($val);
                 break;
-            case AMQPAbstractCollection::T_INT_SHORTSHORT_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORTSHORT_U:
                 $this->write_octet($val);
                 break;
-            case AMQPAbstractCollection::T_INT_SHORT:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORT:
                 $this->write_signed_short($val);
                 break;
-            case AMQPAbstractCollection::T_INT_SHORT_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_SHORT_U:
                 $this->write_short($val);
                 break;
-            case AMQPAbstractCollection::T_INT_LONG:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONG:
                 $this->write_signed_long($val);
                 break;
-            case AMQPAbstractCollection::T_INT_LONG_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONG_U:
                 $this->write_long($val);
                 break;
-            case AMQPAbstractCollection::T_INT_LONGLONG:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONGLONG:
                 $this->write_signed_longlong($val);
                 break;
-            case AMQPAbstractCollection::T_INT_LONGLONG_U:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_INT_LONGLONG_U:
                 $this->write_longlong($val);
                 break;
-            case AMQPAbstractCollection::T_DECIMAL:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_DECIMAL:
                 $this->write_octet($val->e);
                 $this->write_signed_long($val->n);
                 break;
-            case AMQPAbstractCollection::T_TIMESTAMP:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_TIMESTAMP:
                 $this->write_timestamp($val);
                 break;
-            case AMQPAbstractCollection::T_BOOL:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_BOOL:
                 $this->write_octet($val ? 1 : 0);
                 break;
-            case AMQPAbstractCollection::T_STRING_SHORT:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_STRING_SHORT:
                 $this->write_shortstr($val);
                 break;
-            case AMQPAbstractCollection::T_STRING_LONG:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_STRING_LONG:
                 $this->write_longstr($val);
                 break;
-            case AMQPAbstractCollection::T_ARRAY:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_ARRAY:
                 $this->write_array($val);
                 break;
-            case AMQPAbstractCollection::T_TABLE:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_TABLE:
                 $this->write_table($val);
                 break;
-            case AMQPAbstractCollection::T_VOID:
+            case PhpAmqpLib_Wire_AMQPAbstractCollection::T_VOID:
                 break;
             default:
                 throw new PhpAmqpLib_Exception_AMQPInvalidArgumentException(sprintf(

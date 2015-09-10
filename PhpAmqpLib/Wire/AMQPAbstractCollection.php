@@ -296,7 +296,7 @@ abstract class PhpAmqpLib_Wire_AMQPAbstractCollection implements Iterator
      */
     protected function encodeFloat($val)
     {
-        return static::encodeString((string) $val);
+        return self::encodeString((string) $val);
     }
 
     /**

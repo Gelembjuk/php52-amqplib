@@ -32,10 +32,25 @@ class PhpAmqpLib_Exception_AMQPException extends Exception
 
         $ms = PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig);
         $PROTOCOL_CONSTANTS_CLASS = PhpAmqpLib_Channel_AbstractChannel::$PROTOCOL_CONSTANTS_CLASS;
-        $mn = isset($PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[$ms])
-            ? $PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[$ms]
+	
+	$GLOBAL_METHOD_NAMES = $this->getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'GLOBAL_METHOD_NAMES');
+	
+        $mn = isset($GLOBAL_METHOD_NAMES[$ms])
+            ? $GLOBAL_METHOD_NAMES[$ms]
             : $mn = '';
 
         $this->args = array($reply_code, $reply_text, $method_sig, $mn);
+    }
+    /**
+     * It is trick to get static property value when class name is in a variable
+     * 
+     * @param string Class name
+     * @param string Property name
+     * @return string
+     * @throws PhpAmqpLib_Exception_AMQPOutOfRangeException
+     */
+    public static function getStaticProperty($class,$property) {
+	$vars = get_class_vars($class);
+	return $vars[$property];
     }
 }

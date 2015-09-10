@@ -79,7 +79,8 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
             case self::PROTOCOL_091:
                 self::$PROTOCOL_CONSTANTS_CLASS = 'PhpAmqpLib_Wire_Constants091';
                 $c = self::$PROTOCOL_CONSTANTS_CLASS;
-                $this->amqp_protocol_header = $c::$AMQP_PROTOCOL_HEADER;
+		
+                $this->amqp_protocol_header = self::getStaticProperty($c,'AMQP_PROTOCOL_HEADER');
                 $this->protocolWriter = new PhpAmqpLib_Helper_Protocol_Protocol091();
                 $this->waitHelper = new PhpAmqpLib_Helper_Protocol_Wait091();
                 $this->methodMap = new PhpAmqpLib_Helper_Protocol_MethodMap091();
@@ -87,7 +88,7 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
             case self::PROTOCOL_080:
                 self::$PROTOCOL_CONSTANTS_CLASS = 'PhpAmqpLib_Wire_Constants080';
                 $c = self::$PROTOCOL_CONSTANTS_CLASS;
-                $this->amqp_protocol_header = $c::$AMQP_PROTOCOL_HEADER;
+                $this->amqp_protocol_header = self::getStaticProperty($c,'AMQP_PROTOCOL_HEADER');
                 $this->protocolWriter = new PhpAmqpLib_Helper_Protocol_Protocol080();
                 $this->waitHelper = new PhpAmqpLib_Helper_Protocol_Wait080();
                 $this->methodMap = new PhpAmqpLib_Helper_Protocol_MethodMap080();
@@ -97,7 +98,18 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
                 throw new PhpAmqpLib_Exception_AMQPOutOfRangeException(sprintf('Protocol version %s not implemented.', $this->protocolVersion));
         }
     }
-
+    /**
+     * It is trick to get static property value when class name is in a variable
+     * 
+     * @param string Class name
+     * @param string Property name
+     * @return string
+     * @throws PhpAmqpLib_Exception_AMQPOutOfRangeException
+     */
+    public static function getStaticProperty($class,$property) {
+	$vars = get_class_vars($class);
+	return $vars[$property];
+    }
     /**
      * @return string
      * @throws PhpAmqpLib_Exception_AMQPOutOfRangeException
@@ -260,10 +272,13 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
 
             if ($frame_type != 3) {
                 $PROTOCOL_CONSTANTS_CLASS = self::$PROTOCOL_CONSTANTS_CLASS;
+		
+		 $FRAME_TYPES = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'FRAME_TYPES');
+		
                 throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                     'Expecting Content body, received frame type %s (%s)',
                     $frame_type,
-                    $PROTOCOL_CONSTANTS_CLASS::$FRAME_TYPES[$frame_type]
+                    $FRAME_TYPES[$frame_type]
                 ));
             }
 
@@ -324,11 +339,13 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
             if ($allowed_methods == null || in_array($method_sig, $allowed_methods)) {
                 unset($this->method_queue[$qk]);
 
+                 $GLOBAL_METHOD_NAMES = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'GLOBAL_METHOD_NAMES');
+                
                 if ($this->debug) {
                     PhpAmqpLib_Helper_MiscHelper::debug_msg(sprintf(
                         'Executing queued method: %s: %s',
                         $method_sig,
-                        $PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
+                        $GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
                     ));
                 }
 
@@ -342,11 +359,13 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
             $frame_type = $frm[0];
             $payload = $frm[1];
 
+	    $FRAME_TYPES = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'FRAME_TYPES');
+	    
             if ($frame_type != 1) {
                 throw new PhpAmqpLib_Exception_AMQPRuntimeException(sprintf(
                     'Expecting AMQP method, received frame type: %s (%s)',
                     $frame_type,
-                    $PROTOCOL_CONSTANTS_CLASS::$FRAME_TYPES[$frame_type]
+                    $FRAME_TYPES[$frame_type]
                 ));
             }
 
@@ -358,23 +377,29 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
             $method_sig = '' . $method_sig_array[1] . ',' . $method_sig_array[2];
             $args = mb_substr($payload, 4, mb_strlen($payload, 'ASCII') - 4, 'ASCII');
 
+            $GLOBAL_METHOD_NAMES = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'GLOBAL_METHOD_NAMES');
+            
             if ($this->debug) {
                 PhpAmqpLib_Helper_MiscHelper::debug_msg(sprintf(
                     '> %s: %s',
                     $method_sig,
-                    $PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
+                    $GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
                 ));
             }
 
-            if (in_array($method_sig, $PROTOCOL_CONSTANTS_CLASS::$CONTENT_METHODS)) {
+            $CONTENT_METHODS = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'CONTENT_METHODS');
+            
+            if (in_array($method_sig, $CONTENT_METHODS)) {
                 $content = $this->wait_content();
             } else {
                 $content = null;
             }
 
+            $CLOSE_METHODS = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'CLOSE_METHODS');
+            
             if ($allowed_methods == null ||
                 in_array($method_sig, $allowed_methods) ||
-                in_array($method_sig, $PROTOCOL_CONSTANTS_CLASS::$CLOSE_METHODS)
+                in_array($method_sig, $CLOSE_METHODS)
             ) {
                 return $this->dispatch($method_sig, $args, $content);
             }
@@ -382,7 +407,7 @@ abstract class PhpAmqpLib_Channel_AbstractChannel
             // Wasn't what we were looking for? save it for later
             if ($this->debug) {
                 PhpAmqpLib_Helper_MiscHelper::debug_msg('Queueing for later: $method_sig: '
-                    . $PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]);
+                    . $GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]);
             }
             $this->method_queue[] = array($method_sig, $args, $content);
 

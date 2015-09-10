@@ -446,10 +446,13 @@ class PhpAmqpLib_Connection_AbstractConnection extends PhpAmqpLib_Channel_Abstra
 
         if ($this->debug) {
             $PROTOCOL_CONSTANTS_CLASS = self::$PROTOCOL_CONSTANTS_CLASS;
+	    
+	    $GLOBAL_METHOD_NAMES = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'GLOBAL_METHOD_NAMES');
+	    
             PhpAmqpLib_Helper_MiscHelper::debug_msg(sprintf(
                 '< %s: %s',
                 PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig),
-                $PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
+                $GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
             ));
         }
     }
@@ -486,10 +489,13 @@ class PhpAmqpLib_Connection_AbstractConnection extends PhpAmqpLib_Channel_Abstra
 
         if ($this->debug) {
             $PROTOCOL_CONSTANTS_CLASS = self::$PROTOCOL_CONSTANTS_CLASS;
+	    
+	    $GLOBAL_METHOD_NAMES = self::getStaticProperty($PROTOCOL_CONSTANTS_CLASS,'GLOBAL_METHOD_NAMES');
+	    
             PhpAmqpLib_Helper_MiscHelper::debug_msg(sprintf(
                 '< %s: %s',
                 PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig),
-                $PROTOCOL_CONSTANTS_CLASS::$GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
+                $GLOBAL_METHOD_NAMES[PhpAmqpLib_Helper_MiscHelper::methodSig($method_sig)]
             ));
         }
 
