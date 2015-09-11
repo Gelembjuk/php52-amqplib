@@ -1,23 +1,20 @@
 <?php
 
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-
-include(__DIR__ . '/config.php');
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'someExchange';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 $ch->set_ack_handler(
-    function (AMQPMessage $message) {
+    function (PhpAmqpLib_Message_AMQPMessage $message) {
         echo "Message acked with content " . $message->body . PHP_EOL;
     }
 );
 
 $ch->set_nack_handler(
-    function (AMQPMessage $message) {
+    function (PhpAmqpLib_Message_AMQPMessage $message) {
         echo "Message nacked with content " . $message->body . PHP_EOL;
     }
 );
@@ -41,7 +38,7 @@ $ch->confirm_select();
 $ch->exchange_declare($exchange, 'fanout', false, false, true);
 
 $i = 1;
-$msg = new AMQPMessage($i, array('content_type' => 'text/plain'));
+$msg = new PhpAmqpLib_Message_AMQPMessage($i, array('content_type' => 'text/plain'));
 $ch->basic_publish($msg, $exchange);
 
 /*
@@ -52,7 +49,7 @@ $ch->basic_publish($msg, $exchange);
 $ch->wait_for_pending_acks();
 
 while ($i <= 11) {
-    $msg = new AMQPMessage($i++, array('content_type' => 'text/plain'));
+    $msg = new PhpAmqpLib_Message_AMQPMessage($i++, array('content_type' => 'text/plain'));
     $ch->basic_publish($msg, $exchange);
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-include(__DIR__ . '/config.php');
+require_once dirname(__FILE__) . '/config.php';
 
 /**
  * This class shows how you can use signals to handle consumers
@@ -35,7 +35,7 @@ class Consumer
                 'verify_peer_name' => false
             ];
         }
-        $this->_connection = new PhpAmqpLib\Connection\AMQPSSLConnection(
+        $this->_connection = new PhpAmqpLib_Connection_AMQPSSLConnection(
             HOST, PORT, USER, PASS, VHOST, $ssl,
             [
                 'read_write_timeout' => 30,    // needs to be at least 2x heartbeat
@@ -99,10 +99,10 @@ class Consumer
     /**
      * Message handler
      * 
-     * @param  PhpAmqpLib\Message\AMQPMessage $message
+     * @param  PhpAmqpLib_Message_AMQPMessage $message
      * @return void
      */
-    public function messageHandler(PhpAmqpLib\Message\AMQPMessage $message)
+    public function messageHandler(PhpAmqpLib_Message_AMQPMessage $message)
     {
         echo "\n--------\n";
         echo $message->body;
@@ -186,14 +186,14 @@ class Consumer
     /**
      * Current connection 
      * 
-     * @var PhpAmqpLib\Connection\AMQPSSLConnection
+     * @var PhpAmqpLib_Connection_AMQPSSLConnection
      */
     protected $_connection = null;
 
     /**
      * Current channel
      * 
-     * @var PhpAmqpLib\Channel\AMQPChannel
+     * @var PhpAmqpLib_Channel_AMQPChannel
      */
     protected $_channel = null;
     

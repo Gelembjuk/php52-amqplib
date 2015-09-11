@@ -1,17 +1,14 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once dirname(__FILE__) . '/config.php';
 
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-
-$connection = new AMQPConnection('localhost', 5672, 'guest', 'guest');
+$connection = new PhpAmqpLib_Connection_AMQPConnection('localhost', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
 // declare  exchange but don`t bind any queue
 $channel->exchange_declare('hidden_exchange', 'topic');
 
-$msg = new AMQPMessage("Hello World!");
+$msg = new PhpAmqpLib_Message_AMQPMessage("Hello World!");
 
 echo " [x] Sent non-mandatory ...";
 $channel->basic_publish($msg,
@@ -19,10 +16,14 @@ $channel->basic_publish($msg,
     'rkey');
 echo " done.\n";
 
+global $wait;
 $wait = true;
 
 $return_listener = function ($reply_code, $reply_text,
-    $exchange, $routing_key, $msg) use ($wait) {
+    $exchange, $routing_key, $msg) {
+	    
+    global $wait;
+    
     $GLOBALS['wait'] = false;
 
     echo "return: ",

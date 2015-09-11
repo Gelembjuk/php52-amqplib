@@ -1,12 +1,11 @@
 <?php
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
+require_once dirname(__FILE__) . '/config.php';
 
 $source = 'my_source_exchange';
 $dest = 'my_dest_exchange';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 $ch->exchange_declare($source, 'topic', false, true, false);

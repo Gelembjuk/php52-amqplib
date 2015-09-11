@@ -10,10 +10,7 @@
  * NOTE: The script will take some time while it reads data from /dev/urandom
  */
 
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-
-require_once __DIR__ . '/config.php';
+require_once dirname(__FILE__) . '/config.php';
 
 //suboptimal function to generate random content
 function generate_random_content($bytes)
@@ -37,7 +34,7 @@ function generate_random_content($bytes)
 $exchange = 'file_exchange';
 $queue = 'file_queue';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 $ch->queue_declare($queue, false, false, false, false);
@@ -48,7 +45,7 @@ $max = isset($argv[1]) ? (int) $argv[1] : 1;
 $msg_size = 1024 * 1024 * 5 + 1;
 $msg_body = generate_random_content($msg_size);
 
-$msg = new AMQPMessage($msg_body);
+$msg = new PhpAmqpLib_Message_AMQPMessage($msg_body);
 
 $time = microtime(true);
 
@@ -59,7 +56,7 @@ for ($i = 0; $i < $max; $i++) {
 
 echo microtime(true) - $time, "\n";
 
-$ch->basic_publish(new AMQPMessage('quit'), $exchange);
+$ch->basic_publish(new PhpAmqpLib_Message_AMQPMessage('quit'), $exchange);
 
 $ch->close();
 $conn->close();

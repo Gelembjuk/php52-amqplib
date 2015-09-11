@@ -8,14 +8,13 @@
  */
 
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'router';
 $queue = 'msgs';
 $consumer_tag = 'consumer';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 $ch->queue_declare($queue, false, true, false, false);

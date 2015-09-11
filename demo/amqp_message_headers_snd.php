@@ -1,11 +1,8 @@
 <?php
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Wire;
+require_once dirname(__FILE__) . '/config.php';
 
 
-$connection = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$connection = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $channel = $connection->channel();
 
 $exchName = 'topic_headers_test';
@@ -17,8 +14,8 @@ if (empty($data)) {
     $data = "Hello World!";
 }
 
-$msg = new AMQPMessage($data);
-$hdrs=new Wire\AMQPTable(array(
+$msg = new PhpAmqpLib_Message_AMQPMessage($data);
+$hdrs=new PhpAmqpLib_Wire_AMQPTable(array(
    'x-foo'=>'bar',
    'table'=>array('figuf', 'ghf'=>5, 5=>675),
    'num1' => -4294967295,
@@ -45,8 +42,8 @@ $hdrs=new Wire\AMQPTable(array(
    '64bit_uint' => '18446744073709600000',
    '64bitint_neg' => -pow(2, 40)
 ));
-$hdrs->set('shortshort', -5, Wire\AMQPTable::T_INT_SHORTSHORT);
-$hdrs->set('short', -1024, Wire\AMQPTable::T_INT_SHORT);
+$hdrs->set('shortshort', -5, PhpAmqpLib_Wire_AMQPTable::T_INT_SHORTSHORT);
+$hdrs->set('short', -1024, PhpAmqpLib_Wire_AMQPTable::T_INT_SHORT);
 
 echo PHP_EOL . PHP_EOL . 'SENDING MESSAGE WITH HEADERS' . PHP_EOL . PHP_EOL;
 var_dump($hdrs->getNativeData());

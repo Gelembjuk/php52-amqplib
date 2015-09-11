@@ -4,15 +4,13 @@
  * Usage: php file_consume.php 100
  */
 
-use PhpAmqpLib\Connection\AMQPConnection;
-
-require_once __DIR__ . '/config.php';
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'file_exchange';
 $queue = 'file_queue';
 $consumer_tag = '';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 $ch->queue_declare($queue, false, false, false, false);

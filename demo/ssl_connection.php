@@ -1,7 +1,6 @@
 <?php
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPSSLConnection;
+require_once dirname(__FILE__) . '/config.php';
 
 define('CERTS_PATH',
 '/git/rabbitmqinaction/av_scratchwork/openssl');
@@ -12,10 +11,10 @@ $ssl_options = array(
     'verify_peer' => true
 );
 
-$conn = new AMQPSSLConnection(HOST, PORT, USER, PASS, VHOST, $ssl_options);
+$conn = new PhpAmqpLib_Connection_AMQPSSLConnection(HOST, PORT, USER, PASS, VHOST, $ssl_options);
 
 /**
- * @param \PhpAmqpLib\Connection\AbstractConnection $conn
+ * @param PhpAmqpLib_Connection_AbstractConnection $conn
  */
 function shutdown($conn)
 {

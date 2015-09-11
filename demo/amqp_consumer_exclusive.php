@@ -3,8 +3,7 @@
 // Only one consumer per queue is allowed.
 // Set $queue name to test exclusiveness
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'fanout_exclusive_example_exchange';
 $queue = ''; // if empty let RabbitMQ create a queue name
@@ -12,7 +11,7 @@ $queue = ''; // if empty let RabbitMQ create a queue name
 // to test exclusiveness
 $consumer_tag = 'consumer' . getmypid();
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 /*
@@ -68,8 +67,8 @@ function process_message($msg)
 $ch->basic_consume($queue_name, $consumer_tag, false, false, true, false, 'process_message');
 
 /**
- * @param \PhpAmqpLib\Channel\AMQPChannel $ch
- * @param \PhpAmqpLib\Connection\AbstractConnection $conn
+ * @param PhpAmqpLib_Channel_AMQPChannel $ch
+ * @param PhpAmqpLib_Connection_AbstractConnection $conn
  */
 function shutdown($ch, $conn)
 {

@@ -1,13 +1,11 @@
 <?php
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'router';
 $queue = 'msgs';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 /*
@@ -38,7 +36,7 @@ $ch->exchange_declare($exchange, 'direct', false, true, false);
 $ch->queue_bind($queue, $exchange);
 
 $msg_body = implode(' ', array_slice($argv, 1));
-$msg = new AMQPMessage($msg_body, array('content_type' => 'text/plain', 'delivery_mode' => 2));
+$msg = new PhpAmqpLib_Message_AMQPMessage($msg_body, array('content_type' => 'text/plain', 'delivery_mode' => 2));
 $ch->basic_publish($msg, $exchange);
 
 $ch->close();

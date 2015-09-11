@@ -69,6 +69,8 @@ class PhpAmqpLib_Channel_AMQPChannel extends PhpAmqpLib_Channel_AbstractChannel
      */
     private $publish_cache_max_size;
 
+    private $get_keys_less_or_equal_value = 0;
+
     /**
      * @param PhpAmqpLib_Connection_AbstractConnection $connection
      * @param null $channel_id
@@ -794,7 +796,13 @@ class PhpAmqpLib_Channel_AMQPChannel extends PhpAmqpLib_Channel_AbstractChannel
             $this->dispatch_to_handler($handler, array($message));
         }
     }
+    public function get_keys_less_or_equal_closure($keys, $key) {
+	if (bccomp($key, $this->get_keys_less_or_equal_valu, 0) <= 0) {
+		$keys[] = $key;
+	}
 
+	return $keys;
+    }
     /**
      * @param array $array
      * @param $value
@@ -802,17 +810,17 @@ class PhpAmqpLib_Channel_AMQPChannel extends PhpAmqpLib_Channel_AbstractChannel
      */
     protected function get_keys_less_or_equal(array $array, $value)
     {
+	$this->get_keys_less_or_equal_value = $value;
+	
         $keys = array_reduce(
             array_keys($array),
-            function ($keys, $key) use ($value) {
-                if (bccomp($key, $value, 0) <= 0) {
-                    $keys[] = $key;
-                }
-
-                return $keys;
-            },
-            array()
+	    array($this,'get_keys_less_or_equal_closure'),
+            0
         );
+
+	if ($keys === 0) {
+		$keys = array();
+	}
 
         return $keys;
     }

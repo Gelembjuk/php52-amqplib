@@ -1,9 +1,8 @@
 <?php
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
+require_once dirname(__FILE__) . '/config.php';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 
 $ch = $conn->channel();
 

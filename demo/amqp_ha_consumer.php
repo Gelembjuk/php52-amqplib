@@ -1,8 +1,6 @@
 <?php
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Wire\AMQPTable;
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'router';
 $queue = 'haqueue';
@@ -10,7 +8,7 @@ $specific_queue = 'specific-haqueue';
 
 $consumer_tag = 'consumer';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 /*
@@ -19,9 +17,9 @@ $ch = $conn->channel();
         exchange where to publish messages.
 */
 
-$ha_connection = new AMQPTable(array('x-ha-policy' => 'all'));
+$ha_connection = new PhpAmqpLib_Wire_AMQPTable(array('x-ha-policy' => 'all'));
 
-$ha_specific_connection = new AMQPTable(array(
+$ha_specific_connection = new PhpAmqpLib_Wire_AMQPTable(array(
    'x-ha-policy' => 'nodes',
    'x-ha-policy-params' => array(
       'rabbit@' . HOST,

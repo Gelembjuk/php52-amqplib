@@ -1,11 +1,8 @@
 <?php
 
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
+require_once dirname(__FILE__) . '/config.php';
 
-require_once __DIR__ . '/config.php';
-
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 
 $msg_body = <<<EOT
 abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
@@ -30,7 +27,7 @@ for ($i = 0; $i < $max; $i++) {
 
     $ch = $conn->channel();
     list($queue,) = $ch->queue_declare("", false, false, true, true);
-    $msg = new AMQPMessage($msg_body);
+    $msg = new PhpAmqpLib_Message_AMQPMessage($msg_body);
     $ch->basic_publish($msg, "", $queue);
     $ch->close();
 }

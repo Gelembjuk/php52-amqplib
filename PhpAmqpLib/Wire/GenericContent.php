@@ -154,7 +154,7 @@ abstract class PhpAmqpLib_Wire_GenericContent
      * list, suitable for putting into a content frame header.
      *
      * @return string
-     * @todo Inject the AMQPWriter to make the method easier to test
+     * @todo Inject the PhpAmqpLib_Wire_AMQPWriter to make the method easier to test
      */
     public function serialize_properties()
     {
@@ -165,7 +165,7 @@ abstract class PhpAmqpLib_Wire_GenericContent
         $shift = 15;
         $flag_bits = 0;
         $flags = array();
-        $raw_bytes = new AMQPWriter();
+        $raw_bytes = new PhpAmqpLib_Wire_AMQPWriter();
 
         foreach ($this->prop_types as $key => $prototype) {
             $val = isset($this->properties[$key]) ? $this->properties[$key] : null;
@@ -192,7 +192,7 @@ abstract class PhpAmqpLib_Wire_GenericContent
         }
 
         $flags[] = $flag_bits;
-        $result = new AMQPWriter();
+        $result = new PhpAmqpLib_Wire_AMQPWriter();
         foreach ($flags as $flag_bits) {
             $result->write_short($flag_bits);
         }

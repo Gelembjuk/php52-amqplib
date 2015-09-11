@@ -3,7 +3,7 @@
 /**
  * A Message for use with the Channnel.basic_* methods.
  */
-class PhpAmqpLib_Message_AMQPMessage extends PhpAmqpLib_Wire_GenericContent_GenericContent
+class PhpAmqpLib_Message_AMQPMessage extends PhpAmqpLib_Wire_GenericContent
 {
     /** @var string */
     public $body;
@@ -38,7 +38,7 @@ class PhpAmqpLib_Message_AMQPMessage extends PhpAmqpLib_Wire_GenericContent_Gene
     public function __construct($body = '', $properties = null)
     {
         $this->setBody($body);
-        parent::__construct($properties, static::$propertyDefinitions);
+        parent::__construct($properties, self::$propertyDefinitions);
     }
 
     /**

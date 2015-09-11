@@ -1,7 +1,5 @@
 <?php
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
-
+require_once dirname(__FILE__) . '/config.php';
 
 $binding_keys = array_slice($argv, 1);
 if (empty($binding_keys)) {
@@ -10,7 +8,7 @@ if (empty($binding_keys)) {
 }
 
 
-$connection = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$connection = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $channel = $connection->channel();
 
 $exchName = 'topic_headers_test';

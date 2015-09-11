@@ -6,15 +6,12 @@
  * The integer arguments tells the script how many messages to publish.
  */
 
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-
-include(__DIR__ . '/config.php');
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'bench_exchange';
 $queue = 'bench_queue';
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new  PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 $ch->queue_declare($queue, false, false, false, false);
@@ -36,7 +33,7 @@ abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab
 abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza
 EOT;
 
-$msg = new AMQPMessage($msg_body);
+$msg = new PhpAmqpLib_Message_AMQPMessage($msg_body);
 
 $time = microtime(true);
 
@@ -49,7 +46,7 @@ for ($i = 0; $i < $max; $i++) {
 
 echo microtime(true) - $time, "\n";
 
-$ch->basic_publish(new AMQPMessage('quit'), $exchange);
+$ch->basic_publish(new PhpAmqpLib_Message_AMQPMessage('quit'), $exchange);
 
 $ch->close();
 $conn->close();

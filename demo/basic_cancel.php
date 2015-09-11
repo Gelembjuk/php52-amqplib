@@ -1,9 +1,6 @@
 <?php
 
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Helper\Protocol\Wait091;
-
-include(__DIR__ . '/config.php');
+require_once dirname(__FILE__) . '/config.php';
 
 $queue = 'msgs';
 $consumer_tag = 'consumer';
@@ -13,11 +10,11 @@ $consumer_tag = 'consumer';
  * indicating that it's able to receive and process basic.cancel frames by setting the field
  * 'consumer_cancel_notify' to true.
  */
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 $ch->queue_declare($queue);
 
-$waitHelper = new Wait091();
+$waitHelper = new PhpAmqpLib_Helper_Protocol_Wait091();
 
 $ch->basic_consume($queue, $consumer_tag);
 $ch->queue_delete($queue);

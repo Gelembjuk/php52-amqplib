@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once dirname(__FILE__) . '/../autoload.php';
 
 define('HOST', 'localhost');
 define('PORT', 5672);

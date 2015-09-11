@@ -3,14 +3,13 @@
 // Run multiple instances of amqp_consumer_fanout_1.php and
 // amqp_consumer_fanout_2.php to test
 
-include(__DIR__ . '/config.php');
-use PhpAmqpLib\Connection\AMQPConnection;
+require_once dirname(__FILE__) . '/config.php';
 
 $exchange = 'fanout_example_exchange';
 $queue = 'fanout_group_1';
 $consumer_tag = 'consumer' . getmypid();
 
-$conn = new AMQPConnection(HOST, PORT, USER, PASS, VHOST);
+$conn = new PhpAmqpLib_Connection_AMQPConnection(HOST, PORT, USER, PASS, VHOST);
 $ch = $conn->channel();
 
 /*

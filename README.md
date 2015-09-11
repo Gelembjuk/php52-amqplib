@@ -1,12 +1,16 @@
-# php-amqplib #
+# php52-amqplib #
 
-[![Build Status](https://secure.travis-ci.org/videlalvaro/php-amqplib.png)](http://travis-ci.org/videlalvaro/php-amqplib)
+This library is clone of *php-amqplib* modified to work with PHP 5.2
 
 This library is a _pure PHP_ implementation of the AMQP protocol. It's been tested against [RabbitMQ](http://www.rabbitmq.com/).
 
-**Requirements: PHP 5.3** due to the use of `namespaces`.
+**Requirements: PHP 5.2**.
 
 The library was used for the PHP examples of [RabbitMQ in Action](http://manning.com/videla/) and the [official RabbitMQ tutorials](http://www.rabbitmq.com/tutorials/tutorial-one-php.html).
+
+# Original REDAME file of php-amqplib
+
+We didn't create README for this lib yet
 
 ## Supported RabbitMQ Versions ##
 
