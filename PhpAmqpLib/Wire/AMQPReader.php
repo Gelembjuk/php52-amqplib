@@ -357,7 +357,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
      * Read an AMQP table, and return as a PHP array. keys are strings,
      * values are (type,value) tuples.
      *
-     * @param bool $returnObject Whether to return AMQPArray instance instead of plain array
+     * @param bool $returnObject Whether to return PhpAmqpLib_Wire_AMQPArray instance instead of plain array
      * @return array|PhpAmqpLib_Wire_AMQPTable
      */
     public function read_table($returnObject = false)
@@ -393,7 +393,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
      * Reads the array in the next value.
      *
      * @param bool $returnObject Whether to return AMQPArray instance instead of plain array
-     * @return array|AMQPArray
+     * @return array|PhpAmqpLib_Wire_AMQPArray
      */
     public function read_array($returnObject = false)
     {
@@ -403,7 +403,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
         $arrayLength = $this->read_php_int();
         $endOffset = $this->offset + $arrayLength;
 
-        $result = $returnObject ? new AMQPArray() : array();
+        $result = $returnObject ? new PhpAmqpLib_Wire_AMQPArray() : array();
         // Read values until we reach the end of the array
         while ($this->offset < $endOffset) {
             $fieldType = PhpAmqpLib_Wire_AMQPAbstractCollection::getDataTypeForSymbol($this->rawread(1));
