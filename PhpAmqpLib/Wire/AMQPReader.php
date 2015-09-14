@@ -358,7 +358,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
      * values are (type,value) tuples.
      *
      * @param bool $returnObject Whether to return AMQPArray instance instead of plain array
-     * @return array|AMQPTable
+     * @return array|PhpAmqpLib_Wire_AMQPTable
      */
     public function read_table($returnObject = false)
     {
@@ -370,7 +370,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
         }
 
         $table_data = new PhpAmqpLib_Wire_AMQPReader($this->rawread($tlen), null);
-        $result = $returnObject ? new AMQPTable() : array();
+        $result = $returnObject ? new PhpAmqpLib_Wire_AMQPTable() : array();
         while ($table_data->tell() < $tlen) {
             $name = $table_data->read_shortstr();
             $ftype = PhpAmqpLib_Wire_AMQPAbstractCollection::getDataTypeForSymbol($ftypeSym = $table_data->rawread(1));
@@ -382,7 +382,7 @@ class PhpAmqpLib_Wire_AMQPReader extends PhpAmqpLib_Wire_AbstractClient
     }
 
     /**
-     * @return array|AMQPTable
+     * @return array|PhpAmqpLib_Wire_AMQPTable
      */
     public function read_table_object()
     {
