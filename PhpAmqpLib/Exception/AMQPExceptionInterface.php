@@ -1,5 +1,5 @@
 <?php
 
-interface PhpAmqpLib_Exceptio_AMQPExceptionInterface
+interface PhpAmqpLib_Exception_AMQPExceptionInterface
 {
 }
